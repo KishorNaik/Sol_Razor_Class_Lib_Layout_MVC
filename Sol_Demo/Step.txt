@@ -1,0 +1,156 @@
+Step 1:
+From Visual Studio select Create new a new project.
+Select Razor Class Library > Next.
+Select Support pages and views if you need to support views.
+
+Solution Name : AdminUI
+
+Step 2:
+Add Resource Folder to maintain Static Asset.
+
+Step 3:
+Select AdminUI solution -> right click on Solution -> Edit Project File.
+
+Step 4:
+	4.1 Add following Tag Statement on inside the Property Group Tag
+
+	<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+
+	4.2 Add following tag statment on inside the Project Tag
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resource\**\*" />
+    </ItemGroup>
+	Note: Specify the Resource Folder Name
+
+	4.3 Add following Tag Statement on inside the Project Tag
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.3" />
+  </ItemGroup>
+
+  Full Code .csProject
+
+  <Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\AdminModule\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.3" />
+  </ItemGroup>
+
+
+</Project>
+
+  Build the Solution.
+
+Step 5:
+On Resource folder, Create Css, Js and Lib folder to make static asset.
+
+Step 6:
+Go to specified area folder (AdminModule) -> go to View folder.
+    5.1 Add Razor View Start.
+        5.1.1 On Sol_MainUI solution, Add Admin layout on views shared folder.
+        5.1.2 Give Admin Layout referance on razor View Start page.
+
+    5.2 Add Razor Import Start. and Import @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+Step 7:
+Create a controller in AdminModule(Area) folder.
+
+Step 8:
+Add Area Attribute in Controller Class
+[Area(areaName)]
+
+Step 9:
+Add Static Asset Middleware : go to AspDotNetCoreConfiguration folder -> go to Middlewares
+Add the following Static Asset Middlware where we can give reference static asset on Main Ui
+
+public static class AdminApplicationBuilderExtension
+    {
+        public static void UseAdminStaticFiles(this IApplicationBuilder app)
+        {
+            var embeddedProvider =
+                    new EmbeddedFileProvider(typeof(AdminUI.Areas.AdminModule.Controllers.AdminDemoController)
+                    .Assembly, "AdminUI.Resource");
+
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = embeddedProvider,
+                //RequestPath = new PathString("/AdminResource")
+                RequestPath = "/AdminResource"
+            });
+        }
+    }
+
+
+Step 10:
+Add AdminUI referance on Sol_MainUi Solution.
+
+Step 11:
+Go to StartUp.cs file
+    
+    11.1 On Configure method add the following code before UseAuthorization Method
+
+        app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapControllerRoute(
+                        name: "areas",
+                        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                    );
+
+                        endpoints.MapControllerRoute(
+                            name: "default",
+                            pattern: "{controller=Home}/{action=Index}/{id?}");
+                    });
+
+
+    11.2 On Configure method Use Admin Middleware after app.UseStaticFiles();
+     app.UseAdminStaticFiles();
+
+    11.3 on ConfigureServices method add Admin Service.
+    services.AddAdminService();
+
+Step 12:
+    Add Admin CSS and Javascript on _Layout Page.
+
+    12.1 Inside the Head Tag
+
+    <link rel="stylesheet" href="~/AdminResource/css/AdminStyleSheet.css" />
+
+    12.2 Inside the Body Tag
+
+    <script src="~/AdminResource/js/AdminJavascript.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+

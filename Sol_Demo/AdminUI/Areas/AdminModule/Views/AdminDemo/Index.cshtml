@@ -1,0 +1,36 @@
+﻿@model AdminUI.Areas.AdminModule.Models.AdminModel
+
+    <form asp-controller="AdminDemo" asp-action="OnSubmit">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="txtFullName">Full Name</label>
+                        <input id="txtFullName" class="form-control" asp-for="@Model.FullName" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <input type="submit" class="btn btn-dark" value="Submit"/>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+<div class="divBackground">
+    Testing CSS
+</div>
+
+<div>
+    <button onclick="onDemo()">Submit</button>
+    <a class="btn btn-primary" asp-area="" asp-controller="Demo" asp-action="Index">Main Index</a>
+</div>
+
+@*@section Scripts{ 
+
+    <script src="~/js/AdminJavascript.js"></script>
+
+}*@
